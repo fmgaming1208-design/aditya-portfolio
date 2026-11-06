@@ -326,18 +326,19 @@ export default function PortfolioPage() {
       const t = now * 0.0018;
       const isMouseRecentlyMoved = now - mouse.lastMoveTime < 1800;
 
+      // Smooth, Unhurried 60fps Travelling Camera Interpolation
       if (touringRef.current && !celebration && now > camera.userHoldUntil) {
         const maxScroll =
           document.documentElement.scrollHeight - window.innerHeight;
         const clampedTarget = Math.max(0, Math.min(maxScroll, camera.targetY));
         const diff = clampedTarget - camera.currentY;
 
-        const maxCruiseSpeed = 7.8 * speedRef.current;
+        const maxCruiseSpeed = 4.6 * speedRef.current;
         const desiredVy = Math.max(
           -maxCruiseSpeed,
-          Math.min(maxCruiseSpeed, diff * 0.065 * speedRef.current)
+          Math.min(maxCruiseSpeed, diff * 0.035 * speedRef.current)
         );
-        camera.vy += (desiredVy - camera.vy) * 0.18;
+        camera.vy += (desiredVy - camera.vy) * 0.08;
 
         if (Math.abs(diff) > 0.4 || Math.abs(camera.vy) > 0.05) {
           camera.currentY += camera.vy;
@@ -454,10 +455,10 @@ export default function PortfolioPage() {
       while (
         !aborted &&
         touringRef.current &&
-        el.getBoundingClientRect().top > window.innerHeight * 0.8 &&
-        waitTicks < 25
+        el.getBoundingClientRect().top > window.innerHeight * 0.78 &&
+        waitTicks < 30
       ) {
-        await sleep(15);
+        await sleep(20);
         waitTicks++;
       }
 
@@ -484,10 +485,11 @@ export default function PortfolioPage() {
         el.textContent = "";
         el.appendChild(caret);
 
+        // Perfectly synchronized smooth typing cadence
         const charsPerStep =
-          fullText.length > 140 ? 4 : fullText.length > 45 ? 3 : 2;
+          fullText.length > 140 ? 3 : fullText.length > 45 ? 2 : 1;
         const stepDelayMs =
-          fullText.length > 140 ? 22 : fullText.length > 45 ? 25 : 28;
+          fullText.length > 140 ? 34 : fullText.length > 45 ? 38 : 42;
 
         for (let c = 0; c <= fullText.length; c += charsPerStep) {
           if (aborted) break;
@@ -521,7 +523,7 @@ export default function PortfolioPage() {
         }
         el.innerHTML = el.dataset.origHtml || fullText;
       } else {
-        await sleep(180);
+        await sleep(280);
       }
 
       overlay.remove();
@@ -547,11 +549,11 @@ export default function PortfolioPage() {
       camera.currentY = 0;
       camera.targetY = 0;
       camera.vy = 0;
-      await sleep(180);
+      await sleep(220);
       const total = buildNodes.length;
       let i = 0;
       while (i < total && !aborted) {
-        const batchSize = 3;
+        const batchSize = 2;
         const batch: Promise<void>[] = [];
         for (let b = 0; b < batchSize && i < total; b++, i++) {
           batch.push(buildElement(buildNodes[i], i, total));
@@ -635,7 +637,7 @@ export default function PortfolioPage() {
         [data-build] {
           opacity: 0;
           position: relative;
-          transition: opacity 0.16s ease;
+          transition: opacity 0.18s ease;
         }
         [data-build].building,
         [data-build].built {
