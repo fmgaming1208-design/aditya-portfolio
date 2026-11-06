@@ -326,7 +326,6 @@ export default function PortfolioPage() {
       const t = now * 0.0018;
       const isMouseRecentlyMoved = now - mouse.lastMoveTime < 1800;
 
-      // 45% Faster Travelling Camera Interpolation
       if (touringRef.current && !celebration && now > camera.userHoldUntil) {
         const maxScroll =
           document.documentElement.scrollHeight - window.innerHeight;
@@ -485,7 +484,6 @@ export default function PortfolioPage() {
         el.textContent = "";
         el.appendChild(caret);
 
-        // 45% Faster Typewriter Cadence
         const charsPerStep =
           fullText.length > 140 ? 4 : fullText.length > 45 ? 3 : 2;
         const stepDelayMs =
@@ -2155,7 +2153,7 @@ export default function PortfolioPage() {
               </button>
             </div>
             <div className="social-row">
-              {SOCIAL_LINKS.map((s) => (
+              {SOCIAL_LIN_KS.map((s: { label: string; url: string; icon: string }) => (
                 <a
                   key={s.label}
                   href={s.url}
