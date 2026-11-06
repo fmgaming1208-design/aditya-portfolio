@@ -9,17 +9,6 @@ interface LayerItem {
   tags: string[];
 }
 
-// ============================================================================
-// YOUR REAL SOCIAL MEDIA PROFILES & CONTACT INFO (EDIT HERE ANYTIME)
-// ============================================================================
-const PHOTO_PATHS = [
-  "/aditya.png",
-  "/aditya.jpg",
-  "/aditya.png.jpg",
-  "/aditya.jpeg",
-  "/aditya.png.jpeg",
-];
-
 const SOCIAL_LINKS = [
   {
     label: "Instagram",
@@ -33,12 +22,12 @@ const SOCIAL_LINKS = [
   },
   {
     label: "GitHub",
-    url: "https://github.com/", // Paste your GitHub profile link here once you have it
+    url: "https://github.com/",
     icon: "⚡",
   },
   {
     label: "Discord",
-    url: "https://discord.com/", // Add your Discord profile/server link here
+    url: "https://discord.com/",
     icon: "💬",
   },
   {
@@ -50,9 +39,6 @@ const SOCIAL_LINKS = [
 
 const CONTACT_EMAIL = "fmgaming1208@gmail.com";
 
-// ============================================================================
-// PORTFOLIO DATA
-// ============================================================================
 const LAYER_DATA: LayerItem[] = [
   {
     kicker: "LAYER 01 // COGNITIVE CORE",
@@ -161,7 +147,6 @@ const AGENT_COLORS = [
 ];
 
 export default function PortfolioPage() {
-  const [resolvedPhoto, setResolvedPhoto] = useState<string | null>(null);
   const [activeLayer, setActiveLayer] = useState<number>(0);
   const [matrixFilter, setMatrixFilter] = useState<string>("All Systems");
   const [copied, setCopied] = useState<boolean>(false);
@@ -180,7 +165,6 @@ export default function PortfolioPage() {
   const audioCtxRef = useRef<AudioContext | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const contactCardRef = useRef<HTMLDivElement | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     touringRef.current = touring;
@@ -193,51 +177,6 @@ export default function PortfolioPage() {
   useEffect(() => {
     soundOnRef.current = soundOn;
   }, [soundOn]);
-
-  useEffect(() => {
-    let cancelled = false;
-    const probeNext = (idx: number) => {
-      if (cancelled) return;
-      if (idx >= PHOTO_PATHS.length) {
-        const saved = localStorage.getItem("aditya_portfolio_photo");
-        if (saved && !cancelled) setResolvedPhoto(saved);
-        return;
-      }
-      const testImg = new Image();
-      testImg.onload = () => {
-        if (!cancelled) setResolvedPhoto(PHOTO_PATHS[idx]);
-      };
-      testImg.onerror = () => {
-        if (!cancelled) probeNext(idx + 1);
-      };
-      testImg.src = `${PHOTO_PATHS[idx]}?v=${Date.now()}`;
-    };
-    probeNext(0);
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const loadPhotoFile = (file?: File) => {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        localStorage.setItem("aditya_portfolio_photo", reader.result);
-        setResolvedPhoto(reader.result);
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleManualPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    loadPhotoFile(e.target.files?.[0]);
-  };
-
-  const handlePhotoDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    loadPhotoFile(e.dataTransfer.files?.[0]);
-  };
 
   const unlockAudio = () => {
     if (typeof window === "undefined") return;
@@ -393,12 +332,12 @@ export default function PortfolioPage() {
         const clampedTarget = Math.max(0, Math.min(maxScroll, camera.targetY));
         const diff = clampedTarget - camera.currentY;
 
-        const maxCruiseSpeed = 6.2 * speedRef.current;
+        const maxCruiseSpeed = 7.8 * speedRef.current;
         const desiredVy = Math.max(
           -maxCruiseSpeed,
-          Math.min(maxCruiseSpeed, diff * 0.048 * speedRef.current)
+          Math.min(maxCruiseSpeed, diff * 0.065 * speedRef.current)
         );
-        camera.vy += (desiredVy - camera.vy) * 0.14;
+        camera.vy += (desiredVy - camera.vy) * 0.18;
 
         if (Math.abs(diff) > 0.4 || Math.abs(camera.vy) > 0.05) {
           camera.currentY += camera.vy;
@@ -516,9 +455,9 @@ export default function PortfolioPage() {
         !aborted &&
         touringRef.current &&
         el.getBoundingClientRect().top > window.innerHeight * 0.8 &&
-        waitTicks < 40
+        waitTicks < 25
       ) {
-        await sleep(25);
+        await sleep(15);
         waitTicks++;
       }
 
@@ -546,9 +485,9 @@ export default function PortfolioPage() {
         el.appendChild(caret);
 
         const charsPerStep =
-          fullText.length > 140 ? 3 : fullText.length > 45 ? 2 : 1;
+          fullText.length > 140 ? 4 : fullText.length > 45 ? 3 : 2;
         const stepDelayMs =
-          fullText.length > 140 ? 30 : fullText.length > 45 ? 34 : 38;
+          fullText.length > 140 ? 22 : fullText.length > 45 ? 25 : 28;
 
         for (let c = 0; c <= fullText.length; c += charsPerStep) {
           if (aborted) break;
@@ -582,7 +521,7 @@ export default function PortfolioPage() {
         }
         el.innerHTML = el.dataset.origHtml || fullText;
       } else {
-        await sleep(300);
+        await sleep(180);
       }
 
       overlay.remove();
@@ -608,11 +547,11 @@ export default function PortfolioPage() {
       camera.currentY = 0;
       camera.targetY = 0;
       camera.vy = 0;
-      await sleep(260);
+      await sleep(180);
       const total = buildNodes.length;
       let i = 0;
       while (i < total && !aborted) {
-        const batchSize = 2;
+        const batchSize = 3;
         const batch: Promise<void>[] = [];
         for (let b = 0; b < batchSize && i < total; b++, i++) {
           batch.push(buildElement(buildNodes[i], i, total));
@@ -981,7 +920,7 @@ export default function PortfolioPage() {
         }
 
         /* ==========================================
-           CENTER CRIMSON ARCH PORTRAIT + BLENDING
+           CENTER CRIMSON ARCH PORTRAIT + DIRECT /aditya.png
            ========================================== */
         .hero-portrait-wrap {
           display: flex;
@@ -1003,7 +942,6 @@ export default function PortfolioPage() {
           box-shadow:
             0 20px 60px rgba(220, 38, 38, 0.28),
             inset 0 0 45px rgba(239, 68, 68, 0.3);
-          cursor: pointer;
         }
         .portrait-card::before {
           content: '';
@@ -1048,35 +986,6 @@ export default function PortfolioPage() {
           mix-blend-mode: soft-light;
           z-index: 3;
           pointer-events: none;
-        }
-        .portrait-svg {
-          width: 92%;
-          height: 88%;
-          object-fit: cover;
-          z-index: 2;
-        }
-        .portrait-upload-hint {
-          position: absolute;
-          top: 54%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          background: rgba(9, 9, 11, 0.9);
-          border: 1.5px dashed rgba(239, 68, 68, 0.85);
-          color: #ffffff;
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 11px;
-          font-weight: 600;
-          padding: 9px 14px;
-          border-radius: 8px;
-          z-index: 10;
-          white-space: nowrap;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
-          transition: transform 0.2s, background 0.2s;
-        }
-        .portrait-card:hover .portrait-upload-hint {
-          background: #ef4444;
-          border-style: solid;
-          transform: translate(-50%, -50%) scale(1.05);
         }
         .portrait-badge {
           position: absolute;
@@ -1768,91 +1677,20 @@ export default function PortfolioPage() {
               </div>
             </div>
 
-            {/* Center Portrait Arch with Crimson Blend & Drag/Click Loader */}
+            {/* Center Portrait Arch with Direct /aditya.png Rendering */}
             <div className="hero-portrait-wrap">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleManualPhotoUpload}
-              />
               <div
                 className="portrait-card"
                 data-build="box"
                 data-red="true"
                 data-dim="300 × 390"
-                onClick={() => fileInputRef.current?.click()}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={handlePhotoDrop}
-                title="Click or drop aditya.png here"
               >
-                {resolvedPhoto ? (
-                  <>
-                    <img
-                      src={resolvedPhoto}
-                      alt="Aditya Kumar"
-                      className="portrait-img"
-                    />
-                    <div className="portrait-crimson-tint" />
-                  </>
-                ) : (
-                  <>
-                    <div className="portrait-upload-hint">
-                      📸 Click or Drop aditya.png
-                    </div>
-                    <svg
-                      className="portrait-svg"
-                      viewBox="0 0 300 360"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M40 360 C40 270 85 245 150 245 C215 245 260 270 260 360 Z"
-                        fill="#111115"
-                      />
-                      <path
-                        d="M120 245 L150 325 L180 245 Z"
-                        fill="#d4d4d8"
-                      />
-                      <path
-                        d="M144 265 L156 265 L160 330 L150 342 L140 330 Z"
-                        fill="#991b1b"
-                      />
-                      <circle cx="150" cy="145" r="56" fill="#18181b" />
-                      <path
-                        d="M92 135 C90 88 125 65 155 68 C190 70 212 98 206 142 C192 118 165 112 135 116 C112 118 98 128 92 135 Z"
-                        fill="#09090b"
-                      />
-                      <rect
-                        x="115"
-                        y="132"
-                        width="28"
-                        height="12"
-                        rx="3"
-                        fill="#dc2626"
-                        opacity="0.85"
-                      />
-                      <rect
-                        x="157"
-                        y="132"
-                        width="28"
-                        height="12"
-                        rx="3"
-                        fill="#dc2626"
-                        opacity="0.85"
-                      />
-                      <line
-                        x1="143"
-                        y1="138"
-                        x2="157"
-                        y2="138"
-                        stroke="#dc2626"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                  </>
-                )}
+                <img
+                  src="/aditya.png"
+                  alt="Aditya Kumar"
+                  className="portrait-img"
+                />
+                <div className="portrait-crimson-tint" />
                 <div className="portrait-badge">SOVEREIGN SILICON ACTIVE</div>
               </div>
             </div>
@@ -2054,11 +1892,11 @@ export default function PortfolioPage() {
                 <div className="num">478</div>
                 <div className="lbl">MCP Tools</div>
               </div>
-              <div className="metric-card" data-build="box" data-dim="260 × 84">
+              <div className="metric-card" data-build="box" data-red="true" data-dim="260 × 84">
                 <div className="num">14</div>
                 <div className="lbl">MCP Servers</div>
               </div>
-              <div className="metric-card" data-build="box" data-dim="260 × 84">
+              <div className="metric-card" data-build="box" data-red="true" data-dim="260 × 84">
                 <div className="num">15m</div>
                 <div className="lbl">Cycle Loop</div>
               </div>
@@ -2385,7 +2223,7 @@ export default function PortfolioPage() {
               <span className="hud-dot" style={{ background: "#10b981" }} />
             </div>
             <span>
-              Rebuilt by <strong>44 agents</strong> in <strong>38.2s</strong>
+              Rebuilt by <strong>44 agents</strong> in <strong>30.0s</strong>
             </span>
             <button
               className="hud-btn primary"
